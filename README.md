@@ -1,4 +1,4 @@
-# Trivia-mäng
+# Trivia mäng
 Tegu on lihtsa trivia mänguga, kkus mänigjad peavad vastama erinevatele küsimustele
 
 ## Kuidas mängida
