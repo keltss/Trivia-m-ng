@@ -18,7 +18,41 @@ questions = {
         ("Kes maalis Mona Lisa?", ["Leonardo da Vinci", "Pablo Picasso", "Vincent van Gogh", "Claude Monet"], "Leonardo da Vinci"),
         ("Mis on päikese süsteemi suurim planeet?", ["Jupiter", "Saturn", "Uraan", "Neptuun"], "Jupiter")
     ],
-    # Lisage rohkem tasemeid ja küsimusi siia vastavalt vajadusele
+    4: [
+        ("Mis on Aafrika suurim järv?", ["Victoria järv", "Baiikal", "Erie järv", "Huron"], "Victoria järv"),
+        ("Kes leiutas telefoni?", ["Alexander Graham Bell", "Thomas Edison", "Nikola Tesla", "Galileo Galilei"], "Alexander Graham Bell"),
+        ("Mis on maailma kõrgeim mägi?", ["Mount Everest", "K2", "Kangchenjunga", "Lhotse"], "Mount Everest")
+    ],
+    5: [
+        ("Kes kirjutas 'Romeo ja Julia'?", ["William Shakespeare", "Charles Dickens", "Jane Austen", "Mark Twain"], "William Shakespeare"),
+        ("Mis on maailma suurim mandril?", ["Aasia", "Aafrika", "Põhja-Ameerika", "Lõuna-Ameerika"], "Aasia"),
+        ("Mis on maailma suurim linn?", ["Tokyo", "Shanghai", "Delhi", "Mumbai"], "Tokyo")
+    ],
+    6: [
+        ("Mis on kõige levinum element Maa koores?", ["Räni", "Alumiinium", "Raud", "Kuld"], "Räni"),
+        ("Kes kirjutas 'Kuritöö ja karistus'?", ["Fjodor Dostojevski", "Leo Tolstoi", "Anton Tšehhov", "Ivan Turgenev"], "Fjodor Dostojevski"),
+        ("Mis on maailma suurim jõgi?", ["Amazon", "Nile", "Jangtse", "Mississippi-Missouri"], "Amazon")
+    ],
+    7: [
+        ("Kes avastas penitsilliini?", ["Alexander Fleming", "Louis Pasteur", "Robert Koch", "Joseph Lister"], "Alexander Fleming"),
+        ("Mis on maailma pikim jõgi?", ["Nile", "Amazon", "Mississippi-Missouri", "Jangtse"], "Nile"),
+        ("Mis on maailma kõrgeim hoone?", ["Burj Khalifa", "Shanghai Tower", "Abraj Al-Bait Clock Tower", "Pingan International Finance Centre"], "Burj Khalifa")
+    ],
+    8: [
+        ("Mis on maailma suurim saar?", ["Gröönimaa", "Madagaskar", "Borneo", "Sumatra"], "Gröönimaa"),
+        ("Kes kirjutas 'Kääbik'?", ["J.R.R. Tolkien", "C.S. Lewis", "J.K. Rowling", "George R.R. Martin"], "J.R.R. Tolkien"),
+        ("Mis on maailma suurim loom?", ["Sinivaal", "Aafrika elevandil", "Giraf", "Nisuvaal"], "Sinivaal")
+    ],
+    9: [
+        ("Kes avastas gravitatsiooniseadused?", ["Isaac Newton", "Albert Einstein", "Galileo Galilei", "Johannes Kepler"], "Isaac Newton"),
+        ("Mis on maailma pikim mägi?", ["Mauna Kea", "Mount Everest", "Chimborazo", "Kangchenjunga"], "Mauna Kea"),
+        ("Kes kirjutas 'Anna Karenina'?", ["Leo Tolstoi", "Fjodor Dostojevski", "Anton Tšehhov", "Ivan Turgenev"], "Leo Tolstoi")
+    ],
+    10: [
+        ("Mis on kõige tihedamalt asustatud riik maailmas?", ["Monaco", "India", "Hiina", "Bangladesh"], "Monaco"),
+        ("Kes kirjutas 'Don Quijote'?", ["Miguel de Cervantes", "Fyodor Dostoevsky", "Victor Hugo", "Leo Tolstoy"], "Miguel de Cervantes"),
+        ("Mis on kõige kuumem asukoht maailmas?", ["Lut Desert", "Death Valley", "Dasht-e Lut", "Flaming Mountains"], "Death Valley")
+    ]
 }
 
 class TriviaGame:
@@ -124,4 +158,5 @@ if __name__ == "__main__":
     root = tk.Tk()
     game = TriviaGame(root)
     root.mainloop()
+
 
