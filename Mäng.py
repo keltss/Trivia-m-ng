@@ -58,105 +58,103 @@ questions = {
 class TriviaGame:
     def __init__(self, root):
         self.root = root
-        self.root.title("Trivia Mäng")
+        self.root.title("Trivia Mäng")  # Määrame akna pealkirja
         
-        self.level = 1
-        self.score = 0
-        self.total_questions = 0
-        self.wrong_answers = 0
+        self.level = 1  # Alustame esimesest tasemest
+        self.score = 0  # Algne skoor on 0
+        self.total_questions = 0  # Alustame nullist küsimusest
+        self.wrong_answers = 0  # Alguses ei ole valesid vastuseid
         self.lives = 3  # Mängija alustab kolme eluga
         
-        self.questions = self.load_questions()
+        self.questions = self.load_questions()  # Laadime küsimused
         
-        self.level_label = tk.Label(root, text=f"Tase: {self.level}")
+        self.level_label = tk.Label(root, text=f"Tase: {self.level}")  # Loome ja kuvame taseme sildi
         self.level_label.pack(pady=10)
         
-        self.lives_label = tk.Label(root, text=f"Elud: {self.lives}")
+        self.lives_label = tk.Label(root, text=f"Elud: {self.lives}")  # Loome ja kuvame elude sildi
         self.lives_label.pack(pady=10)
         
-        self.question_label = tk.Label(root, text="", wraplength=400)
+        self.question_label = tk.Label(root, text="", wraplength=400)  # Loome ja kuvame küsimuse sildi
         self.question_label.pack(pady=20)
         
-        self.buttons = []
-        for i in range(4):
-            btn = tk.Button(root, text="", width=50, command=lambda i=i: self.check_answer(i))
+        self.buttons = []  # Loome vastuse nuppude nimekirja
+        for i in range(4):  # Neli vastuse võimalust
+            btn = tk.Button(root, text="", width=50, command=lambda i=i: self.check_answer(i))  # Loome vastuse nupud ja määrame nende funktsiooni
             btn.pack(pady=5)
             self.buttons.append(btn)
         
-        self.feedback_label = tk.Label(root, text="")
+        self.feedback_label = tk.Label(root, text="")  # Loome ja kuvame tagasiside sildi
         self.feedback_label.pack(pady=10)
         
-        self.next_button = tk.Button(root, text="Järgmine küsimus", command=self.next_question, state=tk.DISABLED)
+        self.next_button = tk.Button(root, text="Järgmine küsimus", command=self.next_question, state=tk.DISABLED)  # Loome nupu järgmise küsimuse jaoks
         self.next_button.pack(pady=20)
         
-        self.next_question()
+        self.next_question()  # Käivitame esimese küsimuse
     
     def load_questions(self):
-        questions_copy = {}
+        questions_copy = {}  # Loome uue sõnastiku küsimuste jaoks
         for level, q_list in questions.items():
-            questions_copy[level] = random.sample(q_list, len(q_list))
+            questions_copy[level] = random.sample(q_list, len(q_list))  # Segame küsimused iga taseme jaoks
         return questions_copy
     
     def next_question(self):
-        if self.wrong_answers == 3:
+        if self.wrong_answers == 3:  # Kontrollime, kas mängijal on kolm valet vastust
             self.feedback_label.config(text="Kolm vale vastust! Mäng algab uuesti.")
-            self.root.after(2000, self.reset_game)
+            self.root.after(2000, self.reset_game)  # Taaskäivitame mängu pärast 2 sekundit
             return
         
-        if self.level not in self.questions:
+        if self.level not in self.questions:  # Kontrollime, kas kõik tasemed on läbitud
             self.feedback_label.config(text=f"Mäng läbi! Lõplik skoor: {self.score}/{self.total_questions}")
-            self.root.after(2000, self.reset_game)
+            self.root.after(2000, self.reset_game)  # Taaskäivitame mängu pärast 2 sekundit
             return
         
-        if not self.questions[self.level]:
+        if not self.questions[self.level]:  # Kui jooksvad küsimused on läbi, läheme järgmisele tasemele
             self.level += 1
             self.level_label.config(text=f"Tase: {self.level}")
-            self.next_question()
+            self.next_question()  # Laadime järgmise küsimuse
             return
         
-        self.current_question = self.questions[self.level].pop()
+        self.current_question = self.questions[self.level].pop()  # Võtame järgmise küsimuse
         question_text, self.options, self.correct_answer = self.current_question
         
-        self.question_label.config(text=question_text)
+        self.question_label.config(text=question_text)  # Kuvame küsimuse teksti
         for i, option in enumerate(self.options):
-            self.buttons[i].config(text=option, state=tk.NORMAL)
+            self.buttons[i].config(text=option, state=tk.NORMAL)  # Kuvame vastuse valikud ja muudame nupud aktiivseks
         
-        self.feedback_label.config(text="")
-        self.next_button.config(state=tk.DISABLED)
+        self.feedback_label.config(text="")  # Tühjendame tagasiside sildi
+        self.next_button.config(state=tk.DISABLED)  # Muudame järgmise küsimuse nupu mitteaktiivseks
     
     def check_answer(self, index):
         selected_option = self.options[index]
-        if selected_option.lower() == self.correct_answer.lower():
+        if selected_option.lower() == self.correct_answer.lower():  # Kontrollime, kas vastus on õige
             self.score += 1
             self.feedback_label.config(text="Õige vastus!")
         else:
             self.wrong_answers += 1
-            self.lives -= 1
+            self.lives -= 1  # Vähendame elusid vale vastuse korral
             self.lives_label.config(text=f"Elud: {self.lives}")
             self.feedback_label.config(text=f"Vale vastus! Õige vastus on: {self.correct_answer}")
         
         self.total_questions += 1
         
         for btn in self.buttons:
-            btn.config(state=tk.DISABLED)
+            btn.config(state=tk.DISABLED)  # Muudame kõik vastuse nupud mitteaktiivseks
         
-        self.next_button.config(state=tk.NORMAL)
+        self.next_button.config(state=tk.NORMAL)  # Muudame järgmise küsimuse nupu aktiivseks
     
     def reset_game(self):
-        self.level = 1
-        self.score = 0
-        self.total_questions = 0
-        self.wrong_answers = 0
-        self.lives = 3  # Reset elud kolmele
-        self.level_label.config(text=f"Tase: {self.level}")
-        self.lives_label.config(text=f"Elud: {self.lives}")
-        self.questions = self.load_questions()
-        self.next_question()
+        self.level = 1  # Lähtestame taseme
+        self.score = 0  # Lähtestame skoori
+        self.total_questions = 0  # Lähtestame koguküsimuste arvu
+        self.wrong_answers = 0  # Lähtestame valede vastuste arvu
+        self.lives = 3  # Lähtestame elude arvu kolmele
+        self.level_label.config(text=f"Tase: {self.level}")  # Värskendame taseme silti
+        self.lives_label.config(text=f"Elud: {self.lives}")  # Värskendame elude silti
+        self.questions = self.load_questions()  # Laadime uuesti küsimused
+        self.next_question()  # Laadime järgmise küsimuse
 
 # Mängu käivitamine
 if __name__ == "__main__":
-    root = tk.Tk()
-    game = TriviaGame(root)
-    root.mainloop()
-
-
+    root = tk.Tk()  # Loome Tkinteri juurakna
+    game = TriviaGame(root)  # Loome TriviaGame objekti ja seome selle juuraknaga
+    root.mainloop()  # Käivitame Tkinteri sündmuste tsükli
