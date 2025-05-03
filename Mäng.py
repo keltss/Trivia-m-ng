@@ -57,33 +57,37 @@ questions = {
         ("Mis on Blockchain?", ["Hajutatud andmeplokkide süsteem", "Loop", "Andmetüüp", "Kommentaar"], "Hajutatud andmeplokkide süsteem"),
     ],
 }
+# Mänguklass – haldab ühe taseme küsimusi ja loogikat
 class TriviaGame:
     def __init__(self, root, level):
-        global money  # Access global money
-        self.root = root
-        self.level = level
-        self.money = money  # Use global money value
-        self.initialize_ui()
+        global money
+        self.root = root  # viide peamisele aknale
+        self.level = level  # valitud mängutase
+        self.money = money  # salvestatud raha väärtus
+        self.initialize_ui()  # GUI algseadistus
 
     def initialize_ui(self):
+        # Seadista aken
         self.root.title(f"Programmeerimise Trivia - Tase {self.level}")
         self.root.geometry("800x600")
-        self.root.configure(bg="#2B2D42")
+        self.root.configure(bg="#2B2D42")  # taustavärv
 
+        # Algväärtused
         self.score = 0
-        self.total_questions = 0
         self.wrong_answers = 0
-        self.lives = 3
+        self.lives = 3  # mängijal on 3 elu
+        self.questions = self.load_questions()  # lae küsimused selle taseme jaoks
 
-        self.questions = self.load_questions()
-
+        # Teema seadistused (font, värv jms)
         self.style = ttk.Style()
         self.style.configure("TLabel", background="#2B2D42", foreground="#EDF2F4", font=("Arial", 18))
         self.style.configure("TButton", font=("Arial", 14), padding=10)
 
+        # Kustuta kõik olemasolevad GUI elemendid
         for widget in self.root.winfo_children():
             widget.destroy()
 
+        # Ülemine paneel: tase, elud, raha
         self.top_frame = tk.Frame(self.root, bg="#2B2D42")
         self.top_frame.pack(pady=20)
 
@@ -96,67 +100,75 @@ class TriviaGame:
         self.money_label = ttk.Label(self.top_frame, text=f"Raha: €{self.money}")
         self.money_label.grid(row=0, column=2, padx=20)
 
+        # Küsimuste paneel
         self.question_frame = tk.Frame(self.root, bg="#2B2D42")
         self.question_frame.pack(pady=20)
 
-        self.question_label = tk.Label(
-            self.question_frame, text="", wraplength=600, bg="#2B2D42", fg="#EDF2F4", font=("Arial", 20), justify="center"
-        )
+        self.question_label = tk.Label(self.question_frame, text="", wraplength=600, bg="#2B2D42", fg="#EDF2F4", font=("Arial", 20), justify="center")
         self.question_label.pack(pady=10)
 
+        # Nuppude (vastusevalikute) paneel
         self.button_frame = tk.Frame(self.root, bg="#2B2D42")
         self.button_frame.pack(pady=20)
 
-        self.buttons = []
+        self.buttons = []  # vastusenupud
         for i in range(4):
-            btn = tk.Button(
-                self.button_frame, text="", width=30, height=2, bg="#8D99AE", fg="#FFFFFF",
-                font=("Arial", 14, "bold"), command=lambda i=i: self.check_answer(i)
-            )
+            btn = tk.Button(self.button_frame, text="", width=30, height=2, bg="#8D99AE", fg="#FFFFFF",
+                            font=("Arial", 14, "bold"), command=lambda i=i: self.check_answer(i))
             btn.pack(pady=5)
             self.buttons.append(btn)
 
+        # Tagasiside tekst (õige/vale jms)
         self.feedback_label = ttk.Label(self.root, text="", anchor="center")
         self.feedback_label.pack(pady=10)
 
+        # Vihje ostu nupp
         self.hint_button = ttk.Button(self.root, text="Osta vihje (€10)", command=self.use_hint, state=tk.DISABLED)
         self.hint_button.pack(pady=10)
 
+        # Järgmine küsimus nupp
         self.next_button = ttk.Button(self.root, text="Järgmine küsimus", command=self.next_question, state=tk.DISABLED)
         self.next_button.pack(pady=10)
 
+        # Avalehele tagasiminemise nupp
         self.main_menu_button = ttk.Button(self.root, text="Tagasi avalehele", command=self.return_to_main_menu)
         self.main_menu_button.pack(pady=10)
 
-        self.next_question()
+        self.next_question()  # esita esimene küsimus
 
     def load_questions(self):
+        # Tagastab küsimused juhuslikus järjekorras
         return random.sample(questions[self.level], len(questions[self.level]))
 
     def next_question(self):
-        if self.wrong_answers == 3:
+        # Kui 3 viga on tehtud – tase ebaõnnestus
+        if self.wrong_answers >= 3:
             self.feedback_label.config(text="Kolm vale vastust! Pead taseme uuesti läbima.", foreground="red")
-            self.root.after(2000, self.return_to_main_menu)
+            self.root.after(2000, self.reset_level)
             return
 
-        if not self.questions:
-            if self.score == 3:  # Level is passed only if 3 questions are answered correctly
-                self.feedback_label.config(text=f"Tase {self.level} läbitud! Skoor: {self.score}/3", foreground="green")
-                self.next_button.config(state=tk.DISABLED)
-                self.hint_button.config(state=tk.DISABLED)
-                global money  # Update global money after level completion
-                money = self.money
-                return
-            else:
-                self.feedback_label.config(text="Sa ei vastanud kõigile küsimustele õigesti. Proovi uuesti!", foreground="red")
-                self.root.after(2000, self.reset_level)
+        # Kui tase on läbitud (3 õigesti)
+        if self.score >= 3:
+            self.feedback_label.config(text=f"Tase {self.level} läbitud! Skoor: {self.score}/3", foreground="green")
+            self.hint_button.config(state=tk.DISABLED)
+            self.next_button.config(state=tk.DISABLED)
+            global money
+            money = self.money  # uuenda globaalse raha väärtus
+            return
 
+        # Kui küsimused otsas
+        if not self.questions:
+            self.feedback_label.config(text="Kõik küsimused vastatud. Proovi uuesti!", foreground="red")
+            self.root.after(2000, self.reset_level)
+            return
+
+        # Vali järgmine küsimus
         self.current_question = self.questions.pop()
         question_text, self.options, self.correct_answer = self.current_question
 
-        random.shuffle(self.options)
-
+        random.shuffle(self.options)  # sega valikud
         self.question_label.config(text=question_text)
+
         for i, option in enumerate(self.options):
             self.buttons[i].config(text=option, state=tk.NORMAL, bg="#8D99AE")
 
@@ -165,11 +177,11 @@ class TriviaGame:
         self.hint_button.config(state=tk.NORMAL if self.money >= 10 else tk.DISABLED)
 
     def check_answer(self, index):
+        # Kontrolli, kas kasutaja valik oli õige
         selected_option = self.options[index]
         if selected_option.lower() == self.correct_answer.lower():
             self.score += 1
-            self.money += 5
-            self.money_label.config(text=f"Raha: €{self.money}")
+            self.money += 5  # õigesti vastates teenib raha
             self.feedback_label.config(text="Õige vastus!", foreground="green")
         else:
             self.wrong_answers += 1
@@ -177,33 +189,39 @@ class TriviaGame:
             self.lives_label.config(text=f"Elud: {self.lives}")
             self.feedback_label.config(text=f"Vale vastus! Õige vastus on: {self.correct_answer}", foreground="red")
 
+        self.money_label.config(text=f"Raha: €{self.money}")
+
         for btn in self.buttons:
-            btn.config(state=tk.DISABLED)
+            btn.config(state=tk.DISABLED)  # lukusta kõik nupud
 
         self.next_button.config(state=tk.NORMAL)
         self.hint_button.config(state=tk.DISABLED)
 
     def use_hint(self):
-        if self.money >= 10:
-            self.money -= 10
-            self.money_label.config(text=f"Raha: €{self.money}")
-            self.feedback_label.config(text="Vihje kasutatud!", foreground="blue")
+        # Kui pole piisavalt raha, ära tee midagi
+        if self.money < 10:
+            return
 
-            correct_option = self.correct_answer
-            reduced_options = [correct_option]
+        self.money -= 10  # võta raha
+        self.money_label.config(text=f"Raha: €{self.money}")
+        self.feedback_label.config(text="Vihje kasutatud!", foreground="blue")
 
-            while len(reduced_options) < 2:
-                option = random.choice(self.options)
-                if option != correct_option and option not in reduced_options:
-                    reduced_options.append(option)
+        # Näita ainult 2 valikut (üks neist on õige)
+        correct_option = self.correct_answer
+        reduced_options = [correct_option]
+        while len(reduced_options) < 2:
+            option = random.choice(self.options)
+            if option != correct_option and option not in reduced_options:
+                reduced_options.append(option)
 
-            random.shuffle(reduced_options)
+        random.shuffle(reduced_options)
 
-            for i, btn in enumerate(self.buttons):
-                if btn["text"] not in reduced_options:
-                    btn.config(state=tk.DISABLED)
+        for i, btn in enumerate(self.buttons):
+            if btn["text"] not in reduced_options:
+                btn.config(state=tk.DISABLED)
 
     def reset_level(self):
+        # Lähtesta tase (kui nt 3 vale vastust tehtud)
         self.score = 0
         self.wrong_answers = 0
         self.lives = 3
@@ -211,9 +229,10 @@ class TriviaGame:
         self.next_question()
 
     def return_to_main_menu(self):
+        # Mine tagasi avalehele
         MainMenu(self.root)
 
-
+# Avalehe klass, kus saab taset valida
 class MainMenu:
     def __init__(self, root):
         self.root = root
@@ -227,20 +246,23 @@ class MainMenu:
         for widget in self.root.winfo_children():
             widget.destroy()
 
-        ttk.Label(self.root, text="Tere tulemast Trivia Mängu!", font=("Arial", 24), background="#2B2D42", foreground="#EDF2F4").pack(pady=20)
+        # Tervitustekstid
+        ttk.Label(self.root, text="Tere tulemast Trivia Mängu!", font=("Arial", 24),
+                  background="#2B2D42", foreground="#EDF2F4").pack(pady=20)
 
-        ttk.Label(self.root, text="Vali tase, mida alustada:", font=("Arial", 18), background="#2B2D42", foreground="#EDF2F4").pack(pady=10)
+        ttk.Label(self.root, text="Vali tase, mida alustada:", font=("Arial", 18),
+                  background="#2B2D42", foreground="#EDF2F4").pack(pady=10)
 
+        # Tase 1 kuni 10 nupud
         for level in range(1, 11):
             ttk.Button(self.root, text=f"Tase {level}", command=lambda level=level: self.start_game(level)).pack(pady=5)
 
     def start_game(self, level):
+        # Alusta valitud tasemel mängu
         TriviaGame(self.root, level)
 
-
+# Mängu käivitamine
 if __name__ == "__main__":
-    root = tk.Tk()
-    MainMenu(root)
-    root.mainloop()
-
-
+    root = tk.Tk()  # loo põhiaken
+    MainMenu(root)  # näita avalehte
+    root.mainloop()  # hoia aken aktiivsena
